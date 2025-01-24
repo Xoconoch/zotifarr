@@ -2,6 +2,10 @@
 
 As of 2025, Spotify pays an average of $0.005 per stream to the artist. That means that if you give the equivalent of $5 directly to them (like merch, buying cds, or just donating), you can """ethically""" listen to them a total of 1000 times. Of course, nobody thinks spotify payment is fair, so preferably you should give more, but $5 is the bare minimum. Big names prolly don't need those $5 dollars, but it might be _the_ difference between going out of business or not for that indie rock band you like.
 
+## What is this?
+
+A Zotify web wrapper that allows to add music directly to a personal music library, intended for music server owners (navidrome, pleaxamp, jellyfin, etc.). It saves _every_ track using artist/album/track formatting, audio is in .ogg.
+
 ## Installation
 
 1. Clone this repo
