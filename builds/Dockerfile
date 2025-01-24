@@ -1,22 +1,22 @@
-FROM python:3.9-alpine as base
-
-RUN apk --update add ffmpeg
-
-FROM base as builder
-
-WORKDIR /install
-COPY requirements.txt /requirements.txt
-
-RUN apk add gcc libc-dev zlib zlib-dev jpeg-dev
-RUN pip install --prefix="/install" -r /requirements.txt
-
-FROM base
-
-COPY --from=builder /install /usr/local/lib/python3.9/site-packages
-RUN mv /usr/local/lib/python3.9/site-packages/lib/python3.9/site-packages/* /usr/local/lib/python3.9/site-packages/
-
-COPY zotify /app/zotify
+FROM python:3.11-slim
 
 WORKDIR /app
-CMD ["python3", "-m", "zotify"]
 
+COPY ./app.py ./
+COPY ./utils ./utils
+COPY ./frontend ./frontend
+COPY ./routes ./routes
+COPY ./requirements.txt ./
+COPY ./zotify ./zotify
+
+COPY ./entrypoint.sh ./
+RUN chmod +x ./entrypoint.sh
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 7070
+
+RUN mkdir ./credentials
+RUN mkdir ./downloads
+
+CMD ["./entrypoint.sh"]
