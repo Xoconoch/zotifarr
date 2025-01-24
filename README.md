@@ -26,3 +26,7 @@ Added accounts should be catched automatically on the frontend after reloading i
 ## Acknowledgements
 
 [Zotify](https://github.com/zotify-dev/zotify), for basically being 90% of this project. Cool shi my guy, keep the great work.
+
+## Roadmap:
+
+* Before downloading from spotify, try to download from another service (deezer, tidal or qobuz) in order to at least try on getting best quality.
