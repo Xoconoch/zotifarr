@@ -1,3 +1,7 @@
+## SUPPORT YOU ARTISTS
+
+As of 2025, Spotify pays an average of $0.005 per stream to the artist. That means that if you give the equivalent of $5 directly to them (like merch, buying cds, or just donating), you can """ethically""" listen to them a total of 1000 times. Of course, nobody thinks spotify payment is fair, so preferably you should give more, but $5 is the bare minimum. Big names prolly don't need those $5 dollars, but it might be _the_ difference between going out of business or not for that indie rock band you like.
+
 Rip from spotify directly to your music library regardless of your account.
 
 Intended for self-hosting freaks.
@@ -26,6 +30,7 @@ Added accounts should be catched automatically on the frontend after reloading i
 ## Acknowledgements
 
 [Zotify](https://github.com/zotify-dev/zotify), for basically being 90% of this project. Cool shi my guy, keep the great work.
+This project is NOT an NZBDrone fork, despite its -arr suffix. More info [here](https://www.reddit.com/r/radarr/comments/hbwnb2/a_list_of_all_companion_tools_and_software/)
 
 ## Roadmap:
 
