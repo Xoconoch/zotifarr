@@ -5,7 +5,7 @@ As of 2025, Spotify pays an average of $0.005 per stream to the artist. That mea
 ## Installation
 
 1. Clone this repo
-2. Inside its directory, run `docker build -t zotifarr .`
+2. Inside its directory, run `docker build -t zotifarrr .`
 3. Setup the docker-compose.yaml file (for easier maintenance, preferably in a different directory from the installation)
 4. Deploy the container and access {ip of your server}:7070.
 5. Start ripping
