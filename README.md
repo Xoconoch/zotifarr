@@ -22,3 +22,7 @@ Follow [this repo](https://github.com/dspearson/librespot-auth?tab=readme-ov-fil
 Once you do that, you need to go where your docker-compose.yaml is and create the file `./credentials/{account_custom_name}/credentials.json` and paste the contents from the `credentials.json` you modified previously on your PC/laptop. 
 
 Added accounts should be catched automatically on the frontend after reloading it.
+
+## Acknowledgements
+
+[Zotify](https://github.com/zotify-dev/zotify), for basically being 90% of this project. Cool shi my guy, keep the great work.
