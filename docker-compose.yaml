@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  zotifarr:
+    image: zotifarr
+    ports:
+      - "7070:7070"
+    runtime: sysbox-runc
+    volumes:
+      - "./credentials:/app/credentials"
+      - "/srv/dev-disk-by-uuid-ca57bd51-069f-4c87-b8a9-18716f5a8707/musica/music:/app/downloads"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+    restart: unless-stopped
