@@ -106,6 +106,7 @@ export function initDownload() {
                 let currentTrackName = '';
                 let currentTrackArtists = '';
                 let playlistName = '';
+                let albumName = '';
 
                 while (true) {
                     const { done, value } = await reader.read();
@@ -137,6 +138,14 @@ export function initDownload() {
                                     statusLine.textContent = `Starting playlist: ${playlistName} (${totalTracks} tracks)`;
                                     break;
 
+                                case 'album_start':
+                                    totalTracks = data.total_tracks;
+                                    albumName = data.album;
+                                    completedTracks = 0;
+                                    currentTrackNumber = 0;
+                                    statusLine.textContent = `Starting album: ${albumName} (${totalTracks} tracks)`;
+                                    break;
+
                                 case 'track_start':
                                     if (type === 'playlist') {
                                         currentTrackNumber++;
@@ -146,10 +155,16 @@ export function initDownload() {
                                     }
                                     break;
 
+                                case 'album_track_start':
+                                    currentTrackNumber = data.number;
+                                    currentTrackName = data.track;
+                                    statusLine.textContent = `Starting track ${currentTrackNumber}/${totalTracks}: ${currentTrackName}`;
+                                    break;
+
                                 case 'metadata':
                                     if (type === 'track') {
                                         statusLine.textContent = `Downloading: ${data.name} by ${data.artists[0]}`;
-                                    } else if (type === 'playlist') {
+                                    } else if (type === 'playlist' || type === 'album') {
                                         currentTrackName = data.name;
                                         currentTrackArtists = data.artists.join(', ');
                                         statusLine.textContent = `Downloading track ${currentTrackNumber}/${totalTracks}: ${currentTrackName} by ${currentTrackArtists}`;
@@ -166,9 +181,7 @@ export function initDownload() {
                                         const progress = `${lastPercentage}% of ${formatBytes(data.total)}`;
                                         if (type === 'track') {
                                             statusLine.textContent = `Downloading: ${progress}`;
-                                        } else if (type === 'album') {
-                                            statusLine.textContent = `Downloading track ${currentTrackNumber}/${totalTracks}: ${currentTrackName} (${progress})`;
-                                        } else if (type === 'playlist') {
+                                        } else if (type === 'album' || type === 'playlist') {
                                             statusLine.textContent = `Downloading track ${currentTrackNumber}/${totalTracks}: ${currentTrackName} (${progress})`;
                                         } else {
                                             statusLine.textContent = `Downloading track ${completedTracks + 1}: ${progress}`;
@@ -197,6 +210,11 @@ export function initDownload() {
 
                                 case 'playlist_end':
                                     statusLine.textContent = `Playlist "${data.name}" complete! ${completedTracks}/${data.num_tracks} tracks downloaded`;
+                                    statusLine.classList.add('completed');
+                                    break;
+
+                                case 'album_complete':
+                                    statusLine.textContent = `Album "${data.album}" complete! ${data.successful}/${data.total} tracks downloaded`;
                                     statusLine.classList.add('completed');
                                     break;
 

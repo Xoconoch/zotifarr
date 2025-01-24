@@ -1,4 +1,3 @@
-// Account loading functionality
 export async function loadAccounts() {
     try {
         const response = await fetch('/api/check');
