@@ -115,8 +115,52 @@ def download_album(album):
 
 
 
+def get_artist_info(artist_id):
+    """ Get artist metadata """
+    (raw, resp) = Zotify.invoke_url(f'{ARTIST_URL}/{artist_id}')
+    return resp[NAME]
+
 def download_artist_albums(artist):
-    """ Downloads albums of an artist """
-    albums = get_artist_albums(artist)
-    for album_id in albums:
-        download_album(album_id)
+    """ Downloads albums of an artist with JSON progress tracking """
+    try:
+        artist_name = get_artist_info(artist)
+        albums = get_artist_albums(artist)
+        
+        # Artist download start
+        print(json.dumps({
+            "type": "artist_start",
+            "artist": artist_name,
+            "artist_id": artist,
+            "total_albums": len(albums),
+            "status": "starting"
+        }, ensure_ascii=False), flush=True)
+
+        album_count = 0
+        for album_id in albums:
+            try:
+                download_album(album_id)
+                album_count += 1
+            except Exception as e:
+                print(json.dumps({
+                    "type": "artist_album_error",
+                    "artist": artist_name,
+                    "album_id": album_id,
+                    "error": str(e)
+                }, ensure_ascii=False), flush=True)
+
+        # Artist download complete
+        print(json.dumps({
+            "type": "artist_complete",
+            "artist": artist_name,
+            "artist_id": artist,
+            "completed_albums": album_count,
+            "total_albums": len(albums),
+            "status": "completed" if album_count == len(albums) else "partial"
+        }, ensure_ascii=False), flush=True)
+
+    except Exception as e:
+        print(json.dumps({
+            "type": "artist_error",
+            "artist_id": artist,
+            "error": str(e)
+        }, ensure_ascii=False), flush=True)
