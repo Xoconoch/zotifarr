@@ -4,7 +4,7 @@ As of 2025, Spotify pays an average of $0.005 per stream to the artist. That mea
 
 ## What is this?
 
-A Zotify web wrapper that allows to add music directly to a personal music library, intended for music server owners (navidrome, pleaxamp, jellyfin, etc.). It saves _every_ track using artist/album/track formatting, audio is in .ogg.
+A Zotify web wrapper that allows to add music directly to a personal music library, intended for music server owners (navidrome, plexamp, jellyfin, etc.). It saves _every_ track using artist/album/track formatting, audio is in .ogg.
 
 ## Installation
 
