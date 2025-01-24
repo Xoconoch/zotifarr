@@ -1,0 +1,267 @@
+from librespot.audio.decoders import AudioQuality
+from tabulate import tabulate
+from pathlib import Path
+
+from zotify.album import download_album, download_artist_albums
+from zotify.const import TRACK, NAME, ID, ARTIST, ARTISTS, ITEMS, TRACKS, EXPLICIT, ALBUM, ALBUMS, \
+    OWNER, PLAYLIST, PLAYLISTS, DISPLAY_NAME, TYPE
+from zotify.loader import Loader
+from zotify.playlist import get_playlist_songs, get_playlist_info, download_from_user_playlist, download_playlist
+from zotify.podcast import download_episode, get_show_episodes
+from zotify.termoutput import Printer, PrintChannel
+from zotify.track import download_track, get_saved_tracks, get_followed_artists
+from zotify.utils import splash, split_input, regex_input_for_urls
+from zotify.zotify import Zotify
+
+import json
+
+SEARCH_URL = 'https://api.spotify.com/v1/search'
+
+
+def client(args) -> None:
+    """ Connects to download server to perform query's and get songs to download """
+    Zotify(args)
+
+    Printer.print(PrintChannel.SPLASH, splash())
+
+    quality_options = {
+        'auto': AudioQuality.VERY_HIGH if Zotify.check_premium() else AudioQuality.HIGH,
+        'normal': AudioQuality.NORMAL,
+        'high': AudioQuality.HIGH,
+        'very_high': AudioQuality.VERY_HIGH
+    }
+    Zotify.DOWNLOAD_QUALITY = quality_options[Zotify.CONFIG.get_download_quality()]
+
+    if args.download:
+        urls = []
+        filename = args.download
+        if Path(filename).exists():
+            with open(filename, 'r', encoding='utf-8') as file:
+                urls.extend([line.strip() for line in file.readlines()])
+
+            download_from_urls(urls)
+
+        else:
+            Printer.print(PrintChannel.ERRORS, f'File {filename} not found.\n')
+        return
+
+    if args.urls:
+        if len(args.urls) > 0:
+            download_from_urls(args.urls)
+        return
+
+    if args.playlist:
+        download_from_user_playlist()
+        return
+
+    if args.liked_songs:
+        for song in get_saved_tracks():
+            if not song[TRACK][NAME] or not song[TRACK][ID]:
+                Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE   ###' + "\n")
+            else:
+                download_track('liked', song[TRACK][ID])
+        return
+    
+    if args.followed_artists:
+        for artist in get_followed_artists():
+            download_artist_albums(artist)
+        return
+
+    if args.search:
+        if args.search == ' ':
+            search_text = ''
+            while len(search_text) == 0:
+                search_text = input('Enter search: ')
+            search(search_text)
+        else:
+            if not download_from_urls([args.search]):
+                search(args.search)
+        return
+
+    else:
+        search_text = ''
+        while len(search_text) == 0:
+            search_text = input('Enter search: ')
+        search(search_text)
+
+def download_from_urls(urls: list[str]) -> bool:
+    """ Downloads from a list of urls """
+    download = False
+
+    for spotify_url in urls:
+        track_id, album_id, playlist_id, episode_id, show_id, artist_id = regex_input_for_urls(spotify_url)
+
+        if track_id is not None:
+            download = True
+            download_track('single', track_id)
+        elif artist_id is not None:
+            download = True
+            download_artist_albums(artist_id)
+        elif album_id is not None:
+            download = True
+            download_album(album_id)
+        elif playlist_id is not None:
+            download = True
+            playlist_songs = get_playlist_songs(playlist_id)
+            name, _ = get_playlist_info(playlist_id)
+            enum = 1
+            char_num = len(str(len(playlist_songs)))
+            for song in playlist_songs:
+                if not song[TRACK][NAME] or not song[TRACK][ID]:
+                    Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE   ###' + "\n")
+                else:
+                    if song[TRACK][TYPE] == "episode": # Playlist item is a podcast episode
+                        download_episode(song[TRACK][ID])
+                    else:
+                        download_track('playlist', song[TRACK][ID], extra_keys=
+                        {
+                            'playlist_song_name': song[TRACK][NAME],
+                            'playlist': name,
+                            'playlist_num': str(enum).zfill(char_num),
+                            'playlist_id': playlist_id,
+                            'playlist_track_id': song[TRACK][ID]
+                        })
+                    enum += 1
+        elif episode_id is not None:
+            download = True
+            download_episode(episode_id)
+        elif show_id is not None:
+            download = True
+            for episode in get_show_episodes(show_id):
+                download_episode(episode)
+
+    return download
+
+
+def search(search_term):
+    """ Searches download server's API for relevant data """
+    params = {'limit': '10',
+              'offset': '0',
+              'q': search_term,
+              'type': 'track,album,artist,playlist'}
+
+    # Parse args
+    splits = search_term.split()
+    for split in splits:
+        index = splits.index(split)
+
+        if split[0] == '-' and len(split) > 1:
+            if len(splits)-1 == index:
+                raise IndexError('No parameters passed after option: {}\n'.
+                                 format(split))
+
+        if split == '-l' or split == '-limit':
+            try:
+                int(splits[index+1])
+            except ValueError:
+                raise ValueError('Parameter passed after {} option must be an integer.\n'.
+                                 format(split))
+            if int(splits[index+1]) > 50:
+                raise ValueError('Invalid limit passed. Max is 50.\n')
+            params['limit'] = splits[index+1]
+
+        if split == '-t' or split == '-type':
+
+            allowed_types = ['track', 'playlist', 'album', 'artist']
+            passed_types = []
+            for i in range(index+1, len(splits)):
+                if splits[i][0] == '-':
+                    break
+
+                if splits[i] not in allowed_types:
+                    raise ValueError('Parameters passed after {} option must be from this list:\n{}'.
+                                     format(split, '\n'.join(allowed_types)))
+
+                passed_types.append(splits[i])
+            params['type'] = ','.join(passed_types)
+
+    if len(params['type']) == 0:
+        params['type'] = 'track,album,artist,playlist'
+
+    # Clean search term
+    search_term_list = []
+    for split in splits:
+        if split[0] == "-":
+            break
+        search_term_list.append(split)
+    if not search_term_list:
+        raise ValueError("Invalid query.")
+    params["q"] = ' '.join(search_term_list)
+
+    resp = Zotify.invoke_url_with_params(SEARCH_URL, **params)
+
+    counter = 1
+    results = {
+        TRACKS: [],
+        ALBUMS: [],
+        ARTISTS: [],
+        PLAYLISTS: []
+    }
+
+    # Process Tracks
+    if TRACK in params['type'].split(','):
+        tracks = resp[TRACKS][ITEMS]
+        for track in tracks:
+            track_album = track.get(ALBUM, {})
+            track_images = track_album.get('images', [])
+            image_url = track_images[0]['url'] if track_images else None
+            results[TRACKS].append({
+                'name': track[NAME],
+                'artists': [a[NAME] for a in track[ARTISTS]],
+                'explicit': track[EXPLICIT],
+                'spotify_id': track[ID],
+                'type': TRACK,
+                'image_url': image_url
+            })
+            counter += 1
+
+    # Process Albums
+    if ALBUM in params['type'].split(','):
+        albums = resp[ALBUMS][ITEMS]
+        for album in albums:
+            album_images = album.get('images', [])
+            image_url = album_images[0]['url'] if album_images else None
+            results[ALBUMS].append({
+                'name': album[NAME],
+                'artists': [a[NAME] for a in album[ARTISTS]],
+                'spotify_id': album[ID],
+                'type': ALBUM,
+                'image_url': image_url
+            })
+            counter += 1
+
+    # Process Artists
+    if ARTIST in params['type'].split(','):
+        artists = resp[ARTISTS][ITEMS]
+        for artist in artists:
+            artist_images = artist.get('images', [])
+            image_url = artist_images[0]['url'] if artist_images else None
+            results[ARTISTS].append({
+                'name': artist[NAME],
+                'spotify_id': artist[ID],
+                'type': ARTIST,
+                'image_url': image_url
+            })
+            counter += 1
+
+    # Process Playlists
+    if PLAYLIST in params['type'].split(','):
+        playlists = resp[PLAYLISTS][ITEMS]
+        for playlist in playlists:
+            playlist_images = playlist.get('images', [])
+            image_url = playlist_images[0]['url'] if playlist_images else None
+            results[PLAYLISTS].append({
+                'name': playlist[NAME],
+                'owner': playlist[OWNER][DISPLAY_NAME],
+                'spotify_id': playlist[ID],
+                'type': PLAYLIST,
+                'image_url': image_url
+            })
+            counter += 1
+
+    # Output results and exit
+    total = sum(len(v) for v in results.values())
+    if total == 0:
+        print(json.dumps({"error": "No results found"}, indent=2))
+    else:
+        print(json.dumps(results, indent=2))
