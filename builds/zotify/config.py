@@ -154,7 +154,7 @@ class Config:
     @classmethod
     def get_root_path(cls) -> str:
         if cls.get(ROOT_PATH) == '':
-            root_path = PurePath(Path.home() / 'Music/')
+            root_path = './downloads/music/'
         else:
             root_path = PurePath(Path(cls.get(ROOT_PATH)).expanduser())
         Path(root_path).mkdir(parents=True, exist_ok=True)
@@ -163,7 +163,7 @@ class Config:
     @classmethod
     def get_root_podcast_path(cls) -> str:
         if cls.get(ROOT_PODCAST_PATH) == '':
-            root_podcast_path = PurePath(Path.home() / 'Podcasts/')
+            root_podcast_path = './downloads/podcasts/'
         else:
             root_podcast_path = PurePath(Path(cls.get(ROOT_PODCAST_PATH)).expanduser())
         Path(root_podcast_path).mkdir(parents=True, exist_ok=True)
