@@ -156,7 +156,7 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
     print(json.dumps(json_output, ensure_ascii=False))
 
     try:
-        output_template = Zotify.CONFIG.get_output(mode)
+        output_template = f"{{artist}}/{{album}}/{{track_number}}. {{song_name}}.{{ext}}"
         (artists, raw_artists, album_name, name, image_url, release_year, disc_number,
          track_number, scraped_song_id, is_playable, duration_ms) = get_song_info(track_id)
         song_name = fix_filename(artists[0]) + ' - ' + fix_filename(name)
