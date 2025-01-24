@@ -4,7 +4,7 @@ import json
 from utils.commands import zotify_command_builder
 
 download_blueprint = Blueprint('download', __name__)
-ALLOWED_TYPES = {'album', 'artist', 'track'}
+ALLOWED_TYPES = {'album', 'artist', 'track', 'playlist'}
 
 @download_blueprint.route('/download')
 def download():
