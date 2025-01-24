@@ -12,7 +12,7 @@ Intended for self-hosting freaks.
 5. Deploy the container and access {ip of your server}:7070.
 6. Start ripping
 
-## Adding an accounts
+## Adding accounts
 
 Follow [this repo](https://github.com/dspearson/librespot-auth?tab=readme-ov-file) using a PC/laptop with spotify client installed, and once it generates the credentials.json, you need to modify it as follows:
 
