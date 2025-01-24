@@ -102,26 +102,7 @@ def download_from_urls(urls: list[str]) -> bool:
             download_album(album_id)
         elif playlist_id is not None:
             download = True
-            playlist_songs = get_playlist_songs(playlist_id)
-            name, _ = get_playlist_info(playlist_id)
-            enum = 1
-            char_num = len(str(len(playlist_songs)))
-            for song in playlist_songs:
-                if not song[TRACK][NAME] or not song[TRACK][ID]:
-                    Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE   ###' + "\n")
-                else:
-                    if song[TRACK][TYPE] == "episode": # Playlist item is a podcast episode
-                        download_episode(song[TRACK][ID])
-                    else:
-                        download_track('playlist', song[TRACK][ID], extra_keys=
-                        {
-                            'playlist_song_name': song[TRACK][NAME],
-                            'playlist': name,
-                            'playlist_num': str(enum).zfill(char_num),
-                            'playlist_id': playlist_id,
-                            'playlist_track_id': song[TRACK][ID]
-                        })
-                    enum += 1
+            download_playlist(playlist_id)  # Fixed: Call your JSON-enabled function
         elif episode_id is not None:
             download = True
             download_episode(episode_id)
