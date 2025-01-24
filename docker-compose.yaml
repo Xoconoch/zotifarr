@@ -1,0 +1,9 @@
+services:
+  zotifarrr:
+    image: zotifarrr
+    ports:
+      - "7070:7070"
+    volumes:
+      - "./credentials:/app/credentials"
+      - "./downloads:/app/downloads" # <-- change this mapping for your music library directory
+    restart: unless-stopped
