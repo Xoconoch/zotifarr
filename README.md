@@ -10,7 +10,7 @@ A Zotify web wrapper that allows to add music directly to a personal music libra
 
 Search results (collapsed)
 ![image](https://github.com/user-attachments/assets/6e6d19b0-8fe8-4cdb-99f9-de417bace6b6)
-_Note: The "MX" on the right is the custom name I chose for that particular account. As you can probably infer, this app supports multiple accounts at the same time_
+_Note: The "MX" on the left side of the search bar is the custom name I chose for that particular account. As you can probably infer, this app supports multiple accounts at the same time_
 
 Album search results expanded
 ![image](https://github.com/user-attachments/assets/513f619f-7b07-4988-bd03-8223277bd2e3)
