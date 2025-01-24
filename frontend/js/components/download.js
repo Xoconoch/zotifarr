@@ -102,6 +102,8 @@ export function initDownload() {
                 let lastPercentage = -1;
                 let totalTracks = 0;
                 let completedTracks = 0;
+                let currentTrackNumber = 0;
+                let currentTrackName = '';
                 let isArtistDownload = type === 'artist';
                 let firstAlbumStart = isArtistDownload;
 
@@ -165,18 +167,26 @@ export function initDownload() {
                                     if (Math.floor(data.percentage) > lastPercentage) {
                                         lastPercentage = Math.floor(data.percentage);
                                         const progress = `${lastPercentage}% of ${formatBytes(data.total)}`;
-                                        statusLine.textContent = type === 'track' 
-                                            ? `Downloading: ${progress}`
-                                            : `Downloading track ${completedTracks + 1}: ${progress}`;
+                                        if (type === 'track') {
+                                            statusLine.textContent = `Downloading: ${progress}`;
+                                        } else if (type === 'album') {
+                                            statusLine.textContent = `Downloading track ${currentTrackNumber}/${totalTracks}: ${currentTrackName} (${progress})`;
+                                        } else {
+                                            statusLine.textContent = `Downloading track ${completedTracks + 1}: ${progress}`;
+                                        }
                                     }
                                     break;
 
                                 case 'album_track_start':
+                                    currentTrackNumber = data.number;
+                                    currentTrackName = data.track;
                                     statusLine.textContent = `Downloading track ${data.number}/${totalTracks}: ${data.track}`;
+                                    lastPercentage = -1; // Reset progress for new track
                                     break;
 
                                 case 'playlist_track_start':
                                     statusLine.textContent = `Downloading track ${data.position}: ${data.track}`;
+                                    lastPercentage = -1; // Reset progress for new track
                                     break;
 
                                 case 'conversion_start':
@@ -225,4 +235,13 @@ export function initDownload() {
             }
         }
     });
+}
+
+// Helper function to format bytes
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
