@@ -2,19 +2,13 @@
 
 As of 2025, Spotify pays an average of $0.005 per stream to the artist. That means that if you give the equivalent of $5 directly to them (like merch, buying cds, or just donating), you can """ethically""" listen to them a total of 1000 times. Of course, nobody thinks spotify payment is fair, so preferably you should give more, but $5 is the bare minimum. Big names prolly don't need those $5 dollars, but it might be _the_ difference between going out of business or not for that indie rock band you like.
 
-Rip from spotify directly to your music library regardless of your account.
-
-Intended for self-hosting freaks.
-
 ## Installation
 
-0. Install [sysbox](https://github.com/nestybox/sysbox/blob/master/docs/user-guide/install.md) (for most distros there probably will be a package installation available).
 1. Clone this repo
-2. Give execution permissions to build.sh
-3. Execute build.sh
-4. Setup the docker-compose.yaml file (for easier maintenance, preferably in a different directory from the installation)
-5. Deploy the container and access {ip of your server}:7070.
-6. Start ripping
+2. Inside its directory, run `docker build -t zotifarr .`
+3. Setup the docker-compose.yaml file (for easier maintenance, preferably in a different directory from the installation)
+4. Deploy the container and access {ip of your server}:7070.
+5. Start ripping
 
 ## Adding accounts
 
