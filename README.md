@@ -6,7 +6,7 @@ As of 2025, Spotify pays an average of $0.005 per stream to the artist. That mea
 
 ## Overview
 
-**Zotifarrr** is a [Zotify web](https://github.com/zotify-dev/zotify) wrapper, that allows you download music and podcasts directly from Spotify to your local desktop and media player (such as Navidrome, Plexamp, or Jellyfin).
+**Zotifarrr** is a [Zotify web](https://github.com/zotify-dev/zotify) wrapper, that allows you download music directly from Spotify to your local desktop and media player (such as Navidrome, Plexamp, or Jellyfin).
 
 ## Screenshots
 
