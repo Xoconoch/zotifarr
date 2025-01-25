@@ -12,11 +12,12 @@ As of 2025, Spotify pays an average of $0.005 per stream to the artist. That mea
 
 ### Search results (collapsed)
 
-[insert image link here]
+![image](https://github.com/user-attachments/assets/6e6d19b0-8fe8-4cdb-99f9-de417bace6b6)
+_Note: The "MX" on the left side of the search bar is the custom name I chose for that particular account. As you can probably infer, this app supports multiple accounts at the same time_
 
 ### Album search results expanded
 
-[insert image link here]
+![image](https://github.com/user-attachments/assets/513f619f-7b07-4988-bd03-8223277bd2e3)
 
 ## Installation
 
