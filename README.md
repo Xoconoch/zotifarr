@@ -23,7 +23,7 @@ _Note: The "MX" on the left side of the search bar is the custom name I chose fo
 
 ### Generate a `credentials.json` file
 
-First create a Spotify credentials file using the 3rd-party `librespot-auth` tool.
+First create a Spotify credentials file using the 3rd-party `librespot-auth` tool, this step has to be done in a PC/Laptop that has the Spotify desktop app installed.
 
 In a Terminal, run:
 
@@ -71,6 +71,14 @@ git clone --depth 1 https://github.com/Xoconoch/zotifarrr.git
 # Copy your `credentials.json` into the cloned repo
 mkdir -p ./zotifarrr/credentials/mySpotifyAccount1
 cp credentials.json ./zotifarrr/credentials/mySpotifyAccount1
+
+# If you generated credentials.json in another machine
+mkdir -p ./zotifarrr/credentials/mySpotifyAccount1
+touch ./zotifarrr/credentials/mySpotifyAccount1/credentials.json
+echo {contents of your credentials.json generated elsewhere} > ./zotifarrr/credentials/mySpotifyAccount1/credentials.json
+
+#                               ^^^^
+# There are other ways of doing this, but the important goal of this step is to have a ./zotifarrr/credentials/mySpotifyAccount1/credentials.json file with valid credentials
 
 # Build the Docker image
 cd zotifarrr
